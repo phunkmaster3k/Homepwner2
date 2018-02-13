@@ -31,8 +31,8 @@ class ItemsViewController: UITableViewController {
         
     }
     
-    //edit button
-    @IBAction func toggleEditMode(_ sender: UIButton) {
+    //edit button, save for referance
+    /*@IBAction func toggleEditMode(_ sender: UIButton) {
         //switch text of button, toggle mode
         if isEditing {
             sender.setTitle("Edit", for: .normal)
@@ -41,7 +41,7 @@ class ItemsViewController: UITableViewController {
             sender.setTitle("Done", for: .normal)
             setEditing(true, animated: true)
         }
-    }
+    }*/
     
     //set table rows based on data array size
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -62,13 +62,9 @@ class ItemsViewController: UITableViewController {
         return cell
     }
     
+    //on view load
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let statusBarHeight = UIApplication.shared.statusBarFrame.height
-        let insets = UIEdgeInsets(top: statusBarHeight, left: 0, bottom: 0, right: 0)
-        tableView.contentInset = insets
-        tableView.scrollIndicatorInsets = insets
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 65
