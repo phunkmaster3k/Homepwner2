@@ -12,17 +12,28 @@ class ItemsViewController: UITableViewController {
     
     var itemStore: ItemStore!
     
-    @IBAction func addItem(_ sender: UIButton) {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        navigationItem.leftBarButtonItem = editButtonItem
+    }
+    
+    //add button
+    @IBAction func addItem(_ sender: UIBarButtonItem) {
         
+        //create new item
         let newItem = itemStore.createItem()
         
+        //add new item to array
         if let idx = itemStore.allItems.index(of: newItem) {
             let idxPath = IndexPath(row: idx, section: 0)
             tableView.insertRows(at: [idxPath], with: .automatic)
         }
         
     }
+    
+    //edit button
     @IBAction func toggleEditMode(_ sender: UIButton) {
+        //switch text of button, toggle mode
         if isEditing {
             sender.setTitle("Edit", for: .normal)
             setEditing(false, animated: true)
@@ -32,10 +43,12 @@ class ItemsViewController: UITableViewController {
         }
     }
     
+    //set table rows based on data array size
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemStore.allItems.count
     }
     
+    //populate cells with data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ItemCell", for: indexPath) as! ItemCell
@@ -61,15 +74,18 @@ class ItemsViewController: UITableViewController {
         tableView.estimatedRowHeight = 65
     }
     
+    //delete functionality
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let item = itemStore.allItems[indexPath.row]
             
+            //are you sure popup
             let title = "Delete \(item.name)?"
             let msg = "Are you really sure you want to delete this item?"
             let ac = UIAlertController(title: title, message: msg, preferredStyle: .actionSheet)
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             ac.addAction(cancelAction)
+            
             
             let deleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: {(action) -> Void in
                 self.itemStore.removeItem(item)
@@ -78,17 +94,19 @@ class ItemsViewController: UITableViewController {
             ac.addAction(deleteAction)
             
             present(ac, animated: true, completion: nil)
-            //itemStore.removeItem(item)
-            //tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
     
+    //for moving list items
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        //see itemStore class
         itemStore.moveItem(from: sourceIndexPath.row, to: destinationIndexPath.row)
     }
     
+    //sends data to next view via segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
+        // showItem is the segue identifier
         case "showItem"?:
             if let row = tableView.indexPathForSelectedRow?.row {
                 let item = itemStore.allItems[row]
@@ -99,6 +117,14 @@ class ItemsViewController: UITableViewController {
             preconditionFailure("Unexpected segue identifier")
         }
     }
+    
+    //refresh data on return to view
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
+    
     
     
     

@@ -14,7 +14,7 @@ class Item: NSObject {
     var serialNumber: String?
     let dateCreated: Date
     
-    
+    //base constructor
     init(name: String, serialNumber: String?, valueInDollars: Int) {
         self.name = name
         self.serialNumber = serialNumber
@@ -24,6 +24,7 @@ class Item: NSObject {
         super.init()
     }
     
+    //constructor with random or blank data
     convenience init(random: Bool = false) {
         
         if random {
