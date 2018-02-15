@@ -11,6 +11,19 @@ import UIKit
 class ItemStore {
     var allItems = [Item]()
     
+    let itemArchiveURL: URL = {
+        let documnetDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documnetDirectory = documnetDirectories.first!
+        return documnetDirectory.appendingPathComponent("items.archive")
+    }()
+    
+    init() {
+        if let archivedItems = NSKeyedUnarchiver.unarchiveObject(withFile: itemArchiveURL.path) as? [Item] {
+            allItems = archivedItems
+        }
+    }
+    
+    
     // save this for test data
     /* init() {
         for _ in 0..<5 {
@@ -39,6 +52,11 @@ class ItemStore {
         allItems.remove(at: fromIdx)
         allItems.insert(movedItem, at: toIdx)
         
+    }
+    
+    func saveChanges() -> Bool {
+        print("Saving items to: \(itemArchiveURL.path)")
+        return NSKeyedArchiver.archiveRootObject(allItems, toFile: itemArchiveURL.path)
     }
     
 }
