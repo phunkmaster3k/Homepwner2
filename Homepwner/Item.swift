@@ -55,7 +55,7 @@ class Item: NSObject, NSCoding {
         dateCreated = aDecoder.decodeObject(forKey: "dateCreated") as! Date
         itemKey = aDecoder.decodeObject(forKey: "itemKey") as! String
         serialNumber = aDecoder.decodeObject(forKey: "serialNumber") as! String?
-        valueInDollars = aDecoder.decodeObject(forKey: "valueInDollars") as! Int
+        valueInDollars = aDecoder.decodeInteger(forKey: "valueInDollars")
         
         super.init()
     }
