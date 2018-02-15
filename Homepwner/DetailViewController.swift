@@ -8,12 +8,26 @@
 
 import UIKit
 
-class DetailViewController: UIViewController, UITextFieldDelegate {
+class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
+    @IBOutlet var imageView: UIImageView!
     @IBOutlet var txtName: UITextField!
     @IBOutlet var txtSerial: UITextField!
     @IBOutlet var txtValue: UITextField!
     @IBOutlet var lblDate: UILabel!
+    
+    @IBAction func takePic(_ sender: UIBarButtonItem) {
+        let imgPicker = UIImagePickerController()
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            imgPicker.sourceType = .camera
+        } else {
+            imgPicker.sourceType = .photoLibrary
+        }
+        
+        imgPicker.delegate = self
+        present(imgPicker,animated: true, completion: nil)
+        
+    }
     
     //background tapped
     @IBAction func bgTapped(_ sender: UITapGestureRecognizer) {
@@ -29,6 +43,8 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
             navigationItem.title = item.name
         }
     }
+    
+    var imageStore: ImageStore!
     
     let numFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -53,6 +69,9 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
         txtSerial.text = item.serialNumber
         txtValue.text = numFormatter.string(from: NSNumber(value: item.valueInDollars))
         lblDate.text = dateFormatter.string(from: item.dateCreated)
+        
+        let imgDisplay = imageStore.image(forKey: item.itemKey)
+        imageView.image = imgDisplay
     }
     
     //when we leave view
@@ -78,6 +97,16 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
         //hide keyboard
         textField.resignFirstResponder()
         return true
+    }
+    
+    
+    //returns the picked/taken image to the view
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let img = info[UIImagePickerControllerOriginalImage] as! UIImage
+        imageStore.setImage(img, forKey: item.itemKey)
+        imageView.image = img
+        dismiss(animated: true, completion: nil)
+        
     }
     
     

@@ -13,6 +13,7 @@ class Item: NSObject {
     var valueInDollars: Int
     var serialNumber: String?
     let dateCreated: Date
+    let itemKey: String
     
     //base constructor
     init(name: String, serialNumber: String?, valueInDollars: Int) {
@@ -20,6 +21,7 @@ class Item: NSObject {
         self.serialNumber = serialNumber
         self.valueInDollars = valueInDollars
         self.dateCreated = Date()
+        self.itemKey = UUID().uuidString
         
         super.init()
     }
