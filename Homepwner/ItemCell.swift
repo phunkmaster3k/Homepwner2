@@ -19,9 +19,9 @@ class ItemCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        lblName.adjustsFontForContentSizeCategory = true
-        lblSerialNumber.adjustsFontForContentSizeCategory = true
-        lblValue.adjustsFontForContentSizeCategory = true
+        //lblName.adjustsFontForContentSizeCategory = true
+        //lblSerialNumber.adjustsFontForContentSizeCategory = true
+        //lblValue.adjustsFontForContentSizeCategory = true
     }
     
 }

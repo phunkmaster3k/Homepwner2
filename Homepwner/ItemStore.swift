@@ -11,6 +11,10 @@ import UIKit
 class ItemStore {
     var allItems = [Item]()
     
+    var nameSort = true
+    var serialSort = true
+    var costSort = true
+    
     let itemArchiveURL: URL = {
         let docDirs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docDir = docDirs.first!
@@ -57,6 +61,42 @@ class ItemStore {
     func saveChanges() -> Bool {
         print("Saving items to: \(itemArchiveURL.path)")
         return NSKeyedArchiver.archiveRootObject(allItems, toFile: itemArchiveURL.path)
+    }
+    
+    func sortby(type: String) {
+        
+        if (allItems.count > 1) {
+        
+        switch (type.lowercased())
+        {
+        case "name":
+            if nameSort {
+                allItems.sort(by: { $0.name < $1.name })
+            } else {
+                allItems.sort(by: { $0.name > $1.name })
+            }
+            nameSort = !nameSort
+        case "serial":
+            if serialSort {
+                allItems.sort(by: { $0.serialNumber! < $1.serialNumber! })
+            } else {
+                allItems.sort(by: { $0.serialNumber! > $1.serialNumber! })
+            }
+            serialSort = !serialSort
+        case "cost":
+            if costSort {
+                allItems.sort(by: { $0.valueInDollars < $1.valueInDollars })
+            } else {
+                allItems.sort(by: { $0.valueInDollars > $1.valueInDollars })
+            }
+            costSort = !costSort
+    
+        default:
+            print("not a valid sort")
+        }
+        }
+        
+        
     }
     
     

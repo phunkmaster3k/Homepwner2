@@ -13,9 +13,25 @@ class ItemsViewController: UITableViewController {
     var itemStore: ItemStore!
     var imageStore: ImageStore!
     
+    
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         navigationItem.leftBarButtonItem = editButtonItem
+    }
+    @IBAction func sortByName(_ sender: UIButton) {
+        itemStore.sortby(type: "name")
+        tableView.reloadData();
+    }
+    
+    @IBAction func sortBySerial(_ sender: UIButton) {
+        itemStore.sortby(type: "serial")
+        tableView.reloadData();
+        
+    }
+    @IBAction func sortByCost(_ sender: UIButton) {
+        itemStore.sortby(type: "cost")
+        tableView.reloadData();
     }
     
     //add button
@@ -69,6 +85,11 @@ class ItemsViewController: UITableViewController {
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 65
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableCell(withIdentifier: "itemHeader")
+        return header
     }
     
     //delete functionality
