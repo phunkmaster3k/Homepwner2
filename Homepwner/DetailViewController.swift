@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIDropInteractionDelegate {
     
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var txtName: UITextField!
@@ -37,10 +37,10 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
     }
     
     
-    var item: Item! {
+    var myItem: Item! {
         //set nav title
         didSet {
-            navigationItem.title = item.name
+            navigationItem.title = myItem.name
         }
     }
     
@@ -60,17 +60,25 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
         formatter.timeStyle = .none
         return formatter
     }()
+
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        imageView.addInteraction(UIDropInteraction(delegate: self))
+    }
     
     //fill text fields with data from item
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        txtName.text = item.name
-        txtSerial.text = item.serialNumber
-        txtValue.text = numFormatter.string(from: NSNumber(value: item.valueInDollars))
-        lblDate.text = dateFormatter.string(from: item.dateCreated)
+        txtName.text = myItem.name
+        txtSerial.text = myItem.serialNumber
+        txtValue.text = numFormatter.string(from: NSNumber(value: myItem.valueInDollars))
+        lblDate.text = dateFormatter.string(from: myItem.dateCreated)
         
-        let imgDisplay = imageStore.image(forKey: item.itemKey)
+        let imgDisplay = imageStore.image(forKey: myItem.itemKey)
+        
         imageView.image = imgDisplay
     }
     
@@ -81,13 +89,13 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
         view.endEditing(true)
         
         //save data from text fields to item
-        item.name = txtName.text ?? ""
-        item.serialNumber = txtSerial.text ?? ""
+        myItem.name = txtName.text ?? ""
+        myItem.serialNumber = txtSerial.text ?? ""
         
         if let txtVal = txtValue.text, let val = numFormatter.number(from: txtVal) {
-            item.valueInDollars = val.intValue
+            myItem.valueInDollars = val.intValue
         } else {
-            item.valueInDollars = 0
+            myItem.valueInDollars = 0
         }
     }
     
@@ -103,10 +111,35 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
     //returns the picked/taken image to the view
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let img = info[UIImagePickerControllerOriginalImage] as! UIImage
-        imageStore.setImage(img, forKey: item.itemKey)
+        imageStore.setImage(img, forKey: myItem.itemKey)
         imageView.image = img
         dismiss(animated: true, completion: nil)
         
+    }
+    
+    //can the dragged item be used in the UIImage class
+    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: UIImage.self)
+    }
+    
+    //what to do with the dragged item, in this case copy it
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
+        return UIDropProposal(operation: .copy)
+    }
+    
+    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
+        for item in session.items {
+            item.itemProvider.loadObject(ofClass: UIImage.self, completionHandler: { (obj, err) in
+                
+                let draggedImage = obj as? UIImage
+                
+                //these must be on main thread
+                DispatchQueue.main.async {
+                    self.imageStore.setImage(draggedImage!, forKey: self.myItem.itemKey)
+                    self.imageView.image = draggedImage
+                }
+            })
+        }
     }
     
     

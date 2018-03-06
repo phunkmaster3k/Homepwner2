@@ -130,7 +130,7 @@ class ItemsViewController: UITableViewController {
             if let row = tableView.indexPathForSelectedRow?.row {
                 let item = itemStore.allItems[row]
                 let dvc = segue.destination as! DetailViewController
-                dvc.item = item
+                dvc.myItem = item
                 dvc.imageStore = imageStore
             }
         default:
